@@ -41,14 +41,12 @@ public protocol ECDSAPublicKey: Sendable {
     init(rawRepresentation: some ContiguousBytes) throws
     init(compactRepresentation: some ContiguousBytes) throws
     init(x963Representation: some ContiguousBytes) throws
-    init(compressedRepresentation: some ContiguousBytes) throws
     init(pemRepresentation: String) throws
     init<Bytes>(derRepresentation: Bytes) throws where Bytes: RandomAccessCollection, Bytes.Element == UInt8
     init?(_ key: X509.Certificate.PublicKey)
     var compactRepresentation: Data? { get }
     var rawRepresentation: Data { get }
     var x963Representation: Data { get }
-    var compressedRepresentation: Data { get }
     var derRepresentation: Data { get }
     var pemRepresentation: String { get }
     func isValidSignature(_ signature: some DataProtocol, for data: some Digest) throws -> Bool
