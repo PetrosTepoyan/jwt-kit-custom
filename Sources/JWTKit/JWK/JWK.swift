@@ -72,16 +72,13 @@ public struct JWK: Codable, Sendable {
         public var rawValue: String {
             backing.rawValue
         }
-
-        /// RSA
-        public static let rsa = Self(backing: .rsa)
+		
         /// ECDSA
         public static let ecdsa = Self(backing: .ecdsa)
         /// Octet Key Pair
         public static let octetKeyPair = Self(backing: .octetKeyPair)
 
         enum Backing: String, Codable {
-            case rsa = "RSA"
             case ecdsa = "EC"
             case octetKeyPair = "OKP"
         }
@@ -228,23 +225,6 @@ public struct JWK: Codable, Sendable {
 
     public init(json: String) throws {
         self = try JSONDecoder().decode(JWK.self, from: Data(json.utf8))
-    }
-
-    public static func rsa(
-        _ algorithm: Algorithm?,
-        identifier: JWKIdentifier?,
-        modulus: String?,
-        exponent: String?,
-        privateExponent: String? = nil
-    ) -> JWK {
-        .init(
-            keyType: .rsa,
-            algorithm: algorithm,
-            keyIdentifier: identifier,
-            modulus: modulus,
-            exponent: exponent,
-            privateExponent: privateExponent
-        )
     }
 
     public static func ecdsa(

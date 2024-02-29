@@ -12,46 +12,6 @@ struct JWKSigner: Sendable {
 
     func signer(for algorithm: JWK.Algorithm? = nil) -> JWTSigner? {
         switch jwk.keyType.backing {
-        case .rsa:
-            guard
-                let modulus = self.jwk.modulus,
-                let exponent = self.jwk.exponent
-            else {
-                return nil
-            }
-
-            let rsaKey: RSAKey
-            do {
-                if let privateExponent = jwk.privateExponent {
-                    rsaKey = try Insecure.RSA.PrivateKey(modulus: modulus, exponent: exponent, privateExponent: privateExponent)
-                } else {
-                    rsaKey = try Insecure.RSA.PublicKey(modulus: modulus, exponent: exponent)
-                }
-            } catch {
-                return nil
-            }
-
-            guard let algorithm = algorithm ?? self.jwk.algorithm else {
-                return nil
-            }
-
-            switch algorithm {
-            case .rs256:
-                return .init(algorithm: RSASigner(key: rsaKey, algorithm: .sha256, name: "RS256", padding: .insecurePKCS1v1_5))
-            case .rs384:
-                return .init(algorithm: RSASigner(key: rsaKey, algorithm: .sha384, name: "RS384", padding: .insecurePKCS1v1_5))
-            case .rs512:
-                return .init(algorithm: RSASigner(key: rsaKey, algorithm: .sha512, name: "RS512", padding: .insecurePKCS1v1_5))
-            case .ps256:
-                return .init(algorithm: RSASigner(key: rsaKey, algorithm: .sha256, name: "PS256", padding: .PSS))
-            case .ps384:
-                return .init(algorithm: RSASigner(key: rsaKey, algorithm: .sha384, name: "PS384", padding: .PSS))
-            case .ps512:
-                return .init(algorithm: RSASigner(key: rsaKey, algorithm: .sha512, name: "PS512", padding: .PSS))
-            default:
-                return nil
-            }
-
         case .ecdsa:
             guard let x = self.jwk.x else {
                 return nil

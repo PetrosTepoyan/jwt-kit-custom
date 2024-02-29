@@ -11,8 +11,7 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-crypto.git", from: "3.0.0"),
-        .package(url: "https://github.com/apple/swift-certificates.git", from: "1.2.0"),
-        .package(url: "https://github.com/attaswift/BigInt.git", from: "5.2.0"),
+        .package(url: "https://github.com/apple/swift-certificates.git", from: "1.2.0")
     ],
     targets: [
         .target(
@@ -20,8 +19,7 @@ let package = Package(
             dependencies: [
                 .product(name: "Crypto", package: "swift-crypto"),
                 .product(name: "_CryptoExtras", package: "swift-crypto"),
-                .product(name: "X509", package: "swift-certificates"),
-                .product(name: "BigInt", package: "BigInt"),
+                .product(name: "X509", package: "swift-certificates")
             ],
             swiftSettings: [
                 .enableExperimentalFeature("StrictConcurrency"),

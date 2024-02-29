@@ -256,53 +256,8 @@ class JWTKitTests: XCTestCase {
         }
     }
 
-    func testAlgorithmInJWTHeaderOnly() async throws {
-        // rsa key
-        let modulus = "mSfWGBcXRBPgnwnL_ymDCkBaL6vcMcLpBEomzf-wZPajcQFiq4n4MHScyo85Te6GU-YuErVvHKK0D72JhMNWAQXbiF5Hh7swSYX9QsycWwHBgOBNfp51Fm_HTU7ikDBEdSonrmSep8wNqi_PX2_jVBsoxYNeiCQyDLFLHOAAcbIE4Y6lpJy76GpdHJscMO2RsUznjv5VPOQVa_BlQRIIZ0YoSsq9EEZna9O370wZy8jnOthQIXoegQ7sItS1JMKk4X5DdoRenIfbfWLy88XxKOPlIHA5ekT8TyzeI2Uqkg3YMETTDPrSROVO1Qdl2W1uMdfIZ94DgKpZN2VW-w0fLw"
-        let exponent = "AQAB"
-        let privateExponent = "awDmF9aqLqokmXjiydda8mKboArWwP2Ih7K3Ad3Og_u9nUp2gZrXiCMxGGSQiN5Jg3yiW_ffNYaHfyfRWKyQ_g31n4UfPLmPtw6iL3V9GChV5ZDRE9HpxE88U8r1h__xFFrrdnBeWKW8NldI70jg7vY6uiRae4uuXCfSbs4iAUxmRVKWCnV7JE6sObQKUV_EJkBcyND5Y97xsmWD0nPmXCnloQ84gF-eTErJoZBvQhJ4BhmBeUlREHmDKssaxVOCK4l335DKHD1vbuPk9e49M71BK7r2y4Atqk3TEetnwzMs3u-L9RqHaGIBw5u324uGweY7QeD7HFdAUtpjOq_MQQ"
-
-        // sign jwt
-        let keyCollection = try await JWTKeyCollection().addRS256(key: Insecure.RSA.PrivateKey(
-            modulus: modulus,
-            exponent: exponent,
-            privateExponent: privateExponent
-        ), kid: "vapor")
-        struct Foo: JWTPayload {
-            var bar: Int
-            func verify(using _: JWTAlgorithm) throws {}
-        }
-        let jwt = try await keyCollection.sign(Foo(bar: 42), header: ["kid": "vapor"])
-
-        // verify using jwks without alg
-        let jwksString = """
-        {
-            "keys": [
-                {
-                    "kty": "RSA",
-                    "use": "sig",
-                    "kid": "vapor",
-                    "n": "\(modulus)",
-                    "e": "\(exponent)"
-                 }
-            ]
-        }
-        """
-
-        try await keyCollection.use(jwksJSON: jwksString)
-        let foo = try await keyCollection.verify(jwt, as: Foo.self)
-        XCTAssertEqual(foo.bar, 42)
-    }
-
     func testMicrosoftJWKs() async throws {
         await XCTAssertNoThrowAsync(try await JWTKeyCollection().use(jwksJSON: microsoftJWKS))
-    }
-
-    func testFirebaseJWTAndCertificate() async throws {
-        let payload = try await JWTKeyCollection()
-            .addRS256(key: Insecure.RSA.PublicKey(certificatePEM: firebaseCert))
-            .verify(firebaseJWT, as: FirebasePayload.self)
-        XCTAssertEqual(payload.userID, "y8wiKThXGKM88xxrQWDZzKnBuqv2")
     }
 
     func testCustomJSONCoders() async throws {
